@@ -1,13 +1,13 @@
 #!/bin/bash
-# Tarjima — belgilangan matnni Claude orqali tarjima qilib, tasdiqlangach o'rniga qo'yadi.
+# Flipt — belgilangan matnni Claude orqali tarjima qilib, tasdiqlangach o'rniga qo'yadi.
 #
-#   tarjima              belgilangan matnni config'dagi tilga tarjima qiladi (hotkey shu rejimni chaqiradi)
-#   tarjima <til>        bir martalik boshqa tilga, masalan: tarjima Russian
-#   tarjima --settings   sozlamalar oynasi: til, model va tarjima qoidalari (qo'shimcha prompt)
-#   tarjima --show       joriy sozlamalarni ko'rsatadi
-#   tarjima --stdin      stdin'dagi matnni tarjima qilib stdout'ga chiqaradi (oynasiz)
+#   flipt              belgilangan matnni config'dagi tilga tarjima qiladi (hotkey shu rejimni chaqiradi)
+#   flipt <til>        bir martalik boshqa tilga, masalan: flipt Russian
+#   flipt --settings   sozlamalar oynasi: til, model va tarjima qoidalari (qo'shimcha prompt)
+#   flipt --show       joriy sozlamalarni ko'rsatadi
+#   flipt --stdin      stdin'dagi matnni tarjima qilib stdout'ga chiqaradi (oynasiz)
 
-CONF_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/tarjima"
+CONF_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/flipt"
 CONF="$CONF_DIR/config.conf"
 CLAUDE="$HOME/.local/bin/claude"
 
@@ -44,12 +44,12 @@ MODELS=(
     "claude-haiku-4-5|Haiku 4.5"
 )
 
-notify() { notify-send -t 3000 -i accessories-dictionary "Tarjima" "$1"; }
+notify() { notify-send -t 3000 -i accessories-dictionary "Flipt" "$1"; }
 
 write_conf() {  # $1 = til, $2 = model, $3 = qo'shimcha qoidalar (ko'p qatorli bo'lishi mumkin)
     mkdir -p "$CONF_DIR"
     cat > "$CONF" <<EOF
-# Tarjima sozlamalari
+# Flipt sozlamalari
 #
 # LANG — qaysi tilga tarjima qilinadi. Til nomini inglizcha yozing:
 #        English, Russian, Uzbek, Turkish, German, Arabic, ...
@@ -136,7 +136,7 @@ settings() {
     local codes=() out
     for item in "${LANGS[@]}"; do codes+=("${item%%|*}"); done
 
-    out=$(TARJIMA_PROMPT="$EXTRA_PROMPT" python3 - "$TARGET_LANG" "$MODEL" "${codes[@]}" @models "${MODELS[@]}" 2>/dev/null <<'PYUI'
+    out=$(FLIPT_PROMPT="$EXTRA_PROMPT" python3 - "$TARGET_LANG" "$MODEL" "${codes[@]}" @models "${MODELS[@]}" 2>/dev/null <<'PYUI'
 import os, sys
 import gi
 gi.require_version("Gtk", "3.0")
@@ -148,7 +148,7 @@ langs = rest[:sep]
 models = [m.split("|", 1) for m in rest[sep + 1:]]   # [id, ko'rinadigan nom]
 result = {}
 
-win = Gtk.Window(title="Tarjima sozlamalari")
+win = Gtk.Window(title="Flipt sozlamalari")
 win.set_default_size(560, 460)
 win.set_border_width(14)
 win.connect("destroy", Gtk.main_quit)
@@ -201,7 +201,7 @@ grid.attach(label("Qoidalar:", top=True), 0, 4, 1, 1)
 text = Gtk.TextView()
 text.set_wrap_mode(Gtk.WrapMode.WORD_CHAR)
 text.set_left_margin(6); text.set_right_margin(6); text.set_top_margin(6); text.set_bottom_margin(6)
-text.get_buffer().set_text(os.environ.get("TARJIMA_PROMPT", ""))
+text.get_buffer().set_text(os.environ.get("FLIPT_PROMPT", ""))
 scroll = Gtk.ScrolledWindow()
 scroll.set_shadow_type(Gtk.ShadowType.IN)
 scroll.set_hexpand(True); scroll.set_vexpand(True)
@@ -278,7 +278,7 @@ case "$1" in
     -h|--help)
         sed -n '2,8s/^# \{0,1\}//p' "$0"; exit 0 ;;
     -*)
-        echo "Noma'lum parametr: $1 (tarjima --help)" >&2; exit 2 ;;
+        echo "Noma'lum parametr: $1 (flipt --help)" >&2; exit 2 ;;
     ?*)
         TARGET_LANG="$1" ;;
 esac
@@ -301,7 +301,7 @@ fi
 
 # Tahrirlash mumkin bo'lgan oyna: OK = almashtirish, Cancel = bekor.
 final=$(printf '%s' "$result" | zenity --text-info --editable \
-    --title="Tarjima → $TARGET_LANG" \
+    --title="Flipt — tarjima → $TARGET_LANG" \
     --width=600 --height=300 \
     --ok-label="Almashtirish" --cancel-label="Bekor" 2>/dev/null) || exit 0
 

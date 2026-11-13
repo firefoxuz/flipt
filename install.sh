@@ -1,11 +1,11 @@
 #!/bin/bash
-# Tarjima o'rnatuvchisi (Ubuntu, GNOME + Wayland).
+# Flipt o'rnatuvchisi (Ubuntu, GNOME + Wayland).
 set -e
 
 HERE="$(cd "$(dirname "$0")" && pwd)"
 BIN="$HOME/.local/bin"
 APPS="$HOME/.local/share/applications"
-HOTKEY="${TARJIMA_HOTKEY:-<Super>t}"
+HOTKEY="${FLIPT_HOTKEY:-<Super>t}"
 
 echo "==> Bog'liqliklar tekshirilmoqda"
 missing=()
@@ -23,27 +23,27 @@ if [ ! -x "$BIN/claude" ] && ! command -v claude >/dev/null; then
     exit 1
 fi
 
-echo "==> Skript o'rnatilmoqda: $BIN/tarjima"
+echo "==> Skript o'rnatilmoqda: $BIN/flipt"
 mkdir -p "$BIN" "$APPS"
-install -m 755 "$HERE/tarjima" "$BIN/tarjima"
+install -m 755 "$HERE/flipt" "$BIN/flipt"
 
-echo "==> Menyu yorlig'i: $APPS/tarjima.desktop"
-cat > "$APPS/tarjima.desktop" <<DESKTOP
+echo "==> Menyu yorlig'i: $APPS/flipt.desktop"
+cat > "$APPS/flipt.desktop" <<DESKTOP
 [Desktop Entry]
 Type=Application
-Name=Tarjima
+Name=Flipt
 GenericName=Translator
 Comment=Belgilangan matnni Claude orqali tarjima qilish — sozlamalar
-Exec=$BIN/tarjima --settings
+Exec=$BIN/flipt --settings
 Icon=accessories-dictionary
 Terminal=false
 Categories=Utility;
-Keywords=tarjima;translate;claude;perevod;
+Keywords=flipt;tarjima;translate;translator;claude;perevod;
 Actions=translate;
 
 [Desktop Action translate]
 Name=Belgilangan matnni tarjima qilish
-Exec=$BIN/tarjima
+Exec=$BIN/flipt
 DESKTOP
 update-desktop-database "$APPS" 2>/dev/null || true
 
@@ -57,17 +57,17 @@ fi
 
 echo "==> Hotkey: $HOTKEY"
 SCHEMA=org.gnome.settings-daemon.plugins.media-keys
-KPATH=/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/tarjima/
+KPATH=/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/flipt/
 current=$(gsettings get $SCHEMA custom-keybindings)
 case "$current" in
     *"$KPATH"*) ;;                                              # allaqachon ro'yxatda
     "@as []"|"[]") gsettings set $SCHEMA custom-keybindings "['$KPATH']" ;;
     *) gsettings set $SCHEMA custom-keybindings "${current%]}, '$KPATH']" ;;
 esac
-gsettings set $SCHEMA.custom-keybinding:$KPATH name 'Tarjima (Claude)'
-gsettings set $SCHEMA.custom-keybinding:$KPATH command "$BIN/tarjima"
+gsettings set $SCHEMA.custom-keybinding:$KPATH name 'Flipt (Claude)'
+gsettings set $SCHEMA.custom-keybinding:$KPATH command "$BIN/flipt"
 gsettings set $SCHEMA.custom-keybinding:$KPATH binding "$HOTKEY"
 
 echo
 echo "Tayyor. Matnni belgilang va $HOTKEY bosing."
-echo "Sozlamalar: ilovalar menyusidan «Tarjima» yoki: tarjima --settings"
+echo "Sozlamalar: ilovalar menyusidan «Flipt» yoki: flipt --settings"

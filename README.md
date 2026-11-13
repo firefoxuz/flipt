@@ -1,4 +1,4 @@
-# Tarjima
+# Flipt
 
 [English](#english) · [Русский](#русский) · [O'zbekcha](#ozbekcha)
 
@@ -8,7 +8,7 @@
 
 A small Linux app that translates the selected text with the [Claude Code](https://claude.com/claude-code) CLI
 and, once you approve the result, puts it in place of the original.
-("Tarjima" is Uzbek for "translation".)
+(Flipt = flip + text: one key flips your text into another language.)
 
 1. Select text in any application.
 2. Press `Super+T`.
@@ -33,24 +33,24 @@ cd inplace-translator
 
 The installer:
 
-- copies the script to `~/.local/bin/tarjima`;
-- adds a **Tarjima** entry to the applications menu;
+- copies the script to `~/.local/bin/flipt`;
+- adds a **Flipt** entry to the applications menu;
 - grants access to `/dev/uinput` so that `ydotool` works (asks for `sudo`);
-- registers the `Super+T` hotkey. For a different key: `TARJIMA_HOTKEY='<Super>y' ./install.sh`
+- registers the `Super+T` hotkey. For a different key: `FLIPT_HOTKEY='<Super>y' ./install.sh`
 
 > Access to `/dev/uinput` lets any program running under your user simulate key presses.
 > Intended for a personal computer.
 
 ### Settings
 
-Open **Tarjima** from the applications menu, or run `tarjima --settings`:
+Open **Flipt** from the applications menu, or run `flipt --settings`:
 
 - **Tarjima tili** (target language) — pick from the list or type one (English name: `French`, `Korean`…)
 - **Model** — Haiku / Sonnet / Opus / Fable, latest or a pinned version
 - **Qoidalar** (rules) — an extra prompt for the translation, for example:
   "Translate in a formal tone. Do not translate technical terms."
 
-Everything is stored in `~/.config/tarjima/config.conf`, which you can also edit by hand:
+Everything is stored in `~/.config/flipt/config.conf`, which you can also edit by hand:
 
 ```
 LANG=Russian
@@ -65,11 +65,11 @@ Do not translate technical terms (API, deploy, commit).
 
 | Command | What it does |
 |---|---|
-| `tarjima` | translates the selected text into the configured language (this is what the hotkey runs) |
-| `tarjima Russian` | one-off translation into another language |
-| `tarjima --settings` | settings window |
-| `tarjima --show` | current settings |
-| `echo "text" \| tarjima --stdin` | no window, the result is printed to the terminal |
+| `flipt` | translates the selected text into the configured language (this is what the hotkey runs) |
+| `flipt Russian` | one-off translation into another language |
+| `flipt --settings` | settings window |
+| `flipt --show` | current settings |
+| `echo "text" \| flipt --stdin` | no window, the result is printed to the terminal |
 
 ### Limitations
 
@@ -83,7 +83,7 @@ Do not translate technical terms (API, deploy, commit).
 
 Небольшое приложение для Linux: переводит выделенный текст через CLI [Claude Code](https://claude.com/claude-code)
 и после вашего подтверждения вставляет перевод на место оригинала.
-(«Tarjima» по-узбекски — «перевод».)
+(Flipt = flip + text: одна клавиша «переворачивает» текст на другой язык.)
 
 1. Выделите текст в любом приложении.
 2. Нажмите `Super+T`.
@@ -108,24 +108,24 @@ cd inplace-translator
 
 Установщик:
 
-- копирует скрипт в `~/.local/bin/tarjima`;
-- добавляет ярлык **Tarjima** в меню приложений;
+- копирует скрипт в `~/.local/bin/flipt`;
+- добавляет ярлык **Flipt** в меню приложений;
 - выдаёт доступ к `/dev/uinput`, чтобы работал `ydotool` (запросит `sudo`);
-- регистрирует горячую клавишу `Super+T`. Для другой клавиши: `TARJIMA_HOTKEY='<Super>y' ./install.sh`
+- регистрирует горячую клавишу `Super+T`. Для другой клавиши: `FLIPT_HOTKEY='<Super>y' ./install.sh`
 
 > Доступ к `/dev/uinput` позволяет любой программе, запущенной от вашего имени, имитировать
 > нажатия клавиш. Рассчитано на личный компьютер.
 
 ### Настройки
 
-Откройте **Tarjima** в меню приложений или выполните `tarjima --settings`:
+Откройте **Flipt** в меню приложений или выполните `flipt --settings`:
 
 - **Tarjima tili** (язык перевода) — выберите из списка или введите вручную (название по-английски: `French`, `Korean`…)
 - **Model** — Haiku / Sonnet / Opus / Fable, последняя или конкретная версия
 - **Qoidalar** (правила) — дополнительный промпт для перевода, например:
   «Переводи в официальном стиле. Технические термины не переводи.»
 
-Всё хранится в файле `~/.config/tarjima/config.conf`, его можно править и вручную:
+Всё хранится в файле `~/.config/flipt/config.conf`, его можно править и вручную:
 
 ```
 LANG=Russian
@@ -140,11 +140,11 @@ MODEL=sonnet
 
 | Команда | Что делает |
 |---|---|
-| `tarjima` | переводит выделенный текст на язык из настроек (её вызывает горячая клавиша) |
-| `tarjima Russian` | разовый перевод на другой язык |
-| `tarjima --settings` | окно настроек |
-| `tarjima --show` | текущие настройки |
-| `echo "текст" \| tarjima --stdin` | без окна, результат выводится в терминал |
+| `flipt` | переводит выделенный текст на язык из настроек (её вызывает горячая клавиша) |
+| `flipt Russian` | разовый перевод на другой язык |
+| `flipt --settings` | окно настроек |
+| `flipt --show` | текущие настройки |
+| `echo "текст" \| flipt --stdin` | без окна, результат выводится в терминал |
 
 ### Ограничения
 
@@ -158,6 +158,7 @@ MODEL=sonnet
 
 Belgilangan matnni [Claude Code](https://claude.com/claude-code) CLI orqali tarjima qilib,
 tasdiqlaganingizdan keyin o'rniga qo'yadigan kichik Linux ilovasi.
+(Flipt = flip + text: bitta tugma matnni boshqa tilga «ag'daradi».)
 
 1. Istalgan ilovada matnni belgilaysiz.
 2. `Super+T` bosasiz.
@@ -180,24 +181,24 @@ cd inplace-translator
 
 O'rnatuvchi:
 
-- skriptni `~/.local/bin/tarjima` ga ko'chiradi;
-- ilovalar menyusiga **Tarjima** yorlig'ini qo'shadi;
+- skriptni `~/.local/bin/flipt` ga ko'chiradi;
+- ilovalar menyusiga **Flipt** yorlig'ini qo'shadi;
 - `ydotool` ishlashi uchun `/dev/uinput` ga ruxsat beradi (`sudo` so'raydi);
-- `Super+T` hotkey'ini ro'yxatdan o'tkazadi. Boshqa tugma uchun: `TARJIMA_HOTKEY='<Super>y' ./install.sh`
+- `Super+T` hotkey'ini ro'yxatdan o'tkazadi. Boshqa tugma uchun: `FLIPT_HOTKEY='<Super>y' ./install.sh`
 
 > `/dev/uinput` ruxsati sizning nomingizdan ishlayotgan har qanday dasturga klaviatura
 > bosishini simulyatsiya qilish imkonini beradi. Shaxsiy kompyuter uchun mo'ljallangan.
 
 ### Sozlamalar
 
-Ilovalar menyusidan **Tarjima**ni oching yoki `tarjima --settings`:
+Ilovalar menyusidan **Flipt**ni oching yoki `flipt --settings`:
 
 - **Tarjima tili** — ro'yxatdan yoki qo'lda (inglizcha nom: `French`, `Korean`…)
 - **Model** — Haiku / Sonnet / Opus / Fable, eng so'nggi yoki aniq versiya
 - **Qoidalar** — tarjima uchun qo'shimcha prompt, masalan:
   «Rasmiy uslubda tarjima qil. Texnik atamalarni tarjima qilma.»
 
-Hammasi `~/.config/tarjima/config.conf` faylida saqlanadi, uni qo'lda ham tahrirlash mumkin:
+Hammasi `~/.config/flipt/config.conf` faylida saqlanadi, uni qo'lda ham tahrirlash mumkin:
 
 ```
 LANG=Russian
@@ -212,11 +213,11 @@ Texnik atamalarni (API, deploy, commit) tarjima qilma.
 
 | Buyruq | Vazifasi |
 |---|---|
-| `tarjima` | belgilangan matnni config'dagi tilga tarjima qiladi (hotkey shuni chaqiradi) |
-| `tarjima Russian` | bir martalik boshqa tilga |
-| `tarjima --settings` | sozlamalar oynasi |
-| `tarjima --show` | joriy sozlamalar |
-| `echo "matn" \| tarjima --stdin` | oynasiz, natija terminalga chiqadi |
+| `flipt` | belgilangan matnni config'dagi tilga tarjima qiladi (hotkey shuni chaqiradi) |
+| `flipt Russian` | bir martalik boshqa tilga |
+| `flipt --settings` | sozlamalar oynasi |
+| `flipt --show` | joriy sozlamalar |
+| `echo "matn" \| flipt --stdin` | oynasiz, natija terminalga chiqadi |
 
 ### Cheklovlar
 
