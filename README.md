@@ -26,8 +26,8 @@ and, once you approve the result, puts it in place of the original.
 ### Installation
 
 ```bash
-git clone git@github.com:firefoxuz/inplace-translator.git
-cd inplace-translator
+git clone git@github.com:firefoxuz/flipt.git
+cd flipt
 ./install.sh
 ```
 
@@ -101,8 +101,8 @@ Do not translate technical terms (API, deploy, commit).
 ### Установка
 
 ```bash
-git clone git@github.com:firefoxuz/inplace-translator.git
-cd inplace-translator
+git clone git@github.com:firefoxuz/flipt.git
+cd flipt
 ./install.sh
 ```
 
@@ -174,8 +174,8 @@ tasdiqlaganingizdan keyin o'rniga qo'yadigan kichik Linux ilovasi.
 ### O'rnatish
 
 ```bash
-git clone git@github.com:firefoxuz/inplace-translator.git
-cd inplace-translator
+git clone git@github.com:firefoxuz/flipt.git
+cd flipt
 ./install.sh
 ```
 
