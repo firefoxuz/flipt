@@ -5,6 +5,7 @@ set -e
 HERE="$(cd "$(dirname "$0")" && pwd)"
 BIN="$HOME/.local/bin"
 APPS="$HOME/.local/share/applications"
+AUTOSTART="${XDG_CONFIG_HOME:-$HOME/.config}/autostart"
 HOTKEY="${FLIPT_HOTKEY:-<Super>t}"
 
 echo "==> Checking dependencies"
@@ -14,6 +15,9 @@ command -v ydotool  >/dev/null || missing+=(ydotool)
 command -v zenity   >/dev/null || missing+=(zenity)
 command -v notify-send >/dev/null || missing+=(libnotify-bin)
 python3 -c 'import gi; gi.require_version("Gtk", "3.0")' 2>/dev/null || missing+=(python3-gi gir1.2-gtk-3.0)
+python3 -c 'import gi; gi.require_version("AyatanaAppIndicator3", "0.1")' 2>/dev/null \
+    || python3 -c 'import gi; gi.require_version("AppIndicator3", "0.1")' 2>/dev/null \
+    || missing+=(gir1.2-ayatanaappindicator3-0.1)
 if [ ${#missing[@]} -gt 0 ]; then
     echo "    Installing: ${missing[*]}"
     sudo apt install -y "${missing[@]}"
@@ -59,6 +63,23 @@ if [ ! -w /dev/uinput ]; then
     sudo udevadm trigger /dev/uinput
 fi
 
+# Top-bar icon: start it at every login, and right now.
+echo "==> Top-bar icon: $AUTOSTART/flipt-tray.desktop"
+mkdir -p "$AUTOSTART"
+cat > "$AUTOSTART/flipt-tray.desktop" <<DESKTOP
+[Desktop Entry]
+Type=Application
+Name=Flipt
+Comment=Flipt top-bar icon
+Exec=$BIN/flipt --tray
+Icon=accessories-dictionary
+Terminal=false
+NoDisplay=true
+X-GNOME-Autostart-enabled=true
+DESKTOP
+"$BIN/flipt" --tray-stop
+setsid -f "$BIN/flipt" --tray >/dev/null 2>&1 || true
+
 echo "==> Hotkey: $HOTKEY"
 SCHEMA=org.gnome.settings-daemon.plugins.media-keys
 KPATH=/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/flipt/
@@ -73,5 +94,5 @@ gsettings set $SCHEMA.custom-keybinding:$KPATH command "$BIN/flipt"
 gsettings set $SCHEMA.custom-keybinding:$KPATH binding "$HOTKEY"
 
 echo
-echo "Done. Select some text and press $HOTKEY."
+echo "Done. Select some text and press $HOTKEY, or use the Flipt icon in the top bar."
 echo "Settings: open \"Flipt\" from the applications menu, or run: flipt --settings"

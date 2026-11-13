@@ -4,6 +4,8 @@
 #   flipt              translate the selected text into the configured language (the hotkey runs this)
 #   flipt <language>   one-off translation into another language, e.g.: flipt Russian
 #   flipt --settings   settings window: languages, model and translation rules (extra prompt)
+#   flipt --tray       top-bar icon with a menu (started automatically at login by the installer)
+#   flipt --tray-stop  remove the top-bar icon
 #   flipt --show       print the current settings
 #   flipt --stdin      translate stdin to stdout (no windows)
 
@@ -79,6 +81,10 @@ load_messages() {  # $1 = interface language code
         [m_opus]="higher quality, slower"
         [m_fable]="most capable"
         [cfg_model]="Model from config"
+        [t_translate]="Translate selected text"
+        [t_lang]="Translate to"
+        [t_settings]="Settings…"
+        [t_quit]="Quit"
     )
     case "$1" in
         uz)
@@ -108,6 +114,10 @@ load_messages() {  # $1 = interface language code
             M[m_opus]="yuqori sifat, sekinroq"
             M[m_fable]="eng kuchli"
             M[cfg_model]="Config'dagi model"
+            M[t_translate]="Belgilangan matnni tarjima qilish"
+            M[t_lang]="Tarjima tili"
+            M[t_settings]="Sozlamalar…"
+            M[t_quit]="Chiqish"
             ;;
         ru)
             M[select_first]="Сначала выделите текст."
@@ -136,6 +146,10 @@ load_messages() {  # $1 = interface language code
             M[m_opus]="более качественная, медленнее"
             M[m_fable]="самая мощная"
             M[cfg_model]="Модель из конфига"
+            M[t_translate]="Перевести выделенный текст"
+            M[t_lang]="Язык перевода"
+            M[t_settings]="Настройки…"
+            M[t_quit]="Выход"
             ;;
     esac
 }
@@ -154,6 +168,8 @@ Flipt — belgilangan matnni Claude orqali tarjima qilib, tasdiqlangach o'rniga 
   flipt              belgilangan matnni config'dagi tilga tarjima qiladi (hotkey shu rejimni chaqiradi)
   flipt <til>        bir martalik boshqa tilga, masalan: flipt Russian
   flipt --settings   sozlamalar oynasi: tillar, model va tarjima qoidalari (qo'shimcha prompt)
+  flipt --tray       yuqori paneldagi ikonka va menyu (o'rnatuvchi uni tizimga kirishda avtomatik ishga tushiradi)
+  flipt --tray-stop  yuqori paneldagi ikonkani olib tashlaydi
   flipt --show       joriy sozlamalarni ko'rsatadi
   flipt --stdin      stdin'dagi matnni tarjima qilib stdout'ga chiqaradi (oynasiz)
 EOF
@@ -164,6 +180,8 @@ Flipt — переводит выделенный текст через Claude �
   flipt              перевести выделенный текст на язык из конфига (это запускает горячая клавиша)
   flipt <язык>       разовый перевод на другой язык, например: flipt Russian
   flipt --settings   окно настроек: языки, модель и правила перевода (дополнительный промпт)
+  flipt --tray       значок в верхней панели с меню (установщик запускает его автоматически при входе)
+  flipt --tray-stop  убрать значок из верхней панели
   flipt --show       показать текущие настройки
   flipt --stdin      перевести stdin в stdout (без окон)
 EOF
@@ -174,6 +192,8 @@ Flipt — translates the selected text with Claude and, once approved, puts it i
   flipt              translate the selected text into the configured language (the hotkey runs this)
   flipt <language>   one-off translation into another language, e.g.: flipt Russian
   flipt --settings   settings window: languages, model and translation rules (extra prompt)
+  flipt --tray       top-bar icon with a menu (started automatically at login by the installer)
+  flipt --tray-stop  remove the top-bar icon
   flipt --show       print the current settings
   flipt --stdin      translate stdin to stdout (no windows)
 EOF
@@ -431,11 +451,120 @@ PYUI
     notify "$(msg saved "$new_lang" "${new_model:-$MODEL}")"
 }
 
+# --- Top-bar icon (AppIndicator) ---------------------------------------------------------------
+
+TRAY_PID="${XDG_RUNTIME_DIR:-/tmp}/flipt-tray.pid"
+
+tray_pid() {  # prints the PID of a running tray, if any
+    local pid
+    pid=$(cat "$TRAY_PID" 2>/dev/null) || return 1
+    [ -n "$pid" ] && grep -qa -- '--flipt-tray' "/proc/$pid/cmdline" 2>/dev/null && echo "$pid"
+}
+
+tray_stop() {
+    local pid
+    pid=$(tray_pid) && kill "$pid" 2>/dev/null
+    rm -f "$TRAY_PID"
+}
+
+tray() {
+    local pid key self
+    # One icon is enough. ($$ is our own PID when the tray restarts itself after a config change.)
+    pid=$(tray_pid) && [ "$pid" != "$$" ] && exit 0
+    self=$(readlink -f "$0")
+    for key in "${!M[@]}"; do export "FLIPT_T_$key=${M[$key]}"; done
+    echo $$ > "$TRAY_PID"
+
+    # exec keeps the PID, so the PID file stays valid.
+    exec python3 - --flipt-tray "$self" "$CONF" "$TARGET_LANG" "${LANGS[@]}" 2>/dev/null <<'PYTRAY'
+import os, signal, subprocess, sys
+import gi
+gi.require_version("Gtk", "3.0")
+try:
+    gi.require_version("AyatanaAppIndicator3", "0.1")
+    from gi.repository import AyatanaAppIndicator3 as AppIndicator
+except (ValueError, ImportError):
+    gi.require_version("AppIndicator3", "0.1")
+    from gi.repository import AppIndicator3 as AppIndicator
+from gi.repository import Gtk, Gio, GLib
+
+def T(key):
+    return os.environ.get("FLIPT_T_" + key, key)
+
+flipt, conf, cur_lang, langs = sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5:]
+if cur_lang not in langs:
+    langs.append(cur_lang)
+
+def run(*args):
+    subprocess.Popen([flipt, *args], stdin=subprocess.DEVNULL,
+                     stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+
+menu = Gtk.Menu()
+
+item = Gtk.MenuItem(label=T("t_translate"))
+item.connect("activate", lambda *_: run())
+menu.append(item)
+
+lang_item = Gtk.MenuItem(label="%s: %s" % (T("t_lang"), cur_lang))
+lang_menu = Gtk.Menu()
+group = None
+for name in langs:
+    radio = Gtk.RadioMenuItem.new_with_label_from_widget(group, name)
+    group = group or radio
+    radio.set_active(name == cur_lang)
+    # "toggled" also fires for the item being switched off, hence the get_active() check.
+    radio.connect("toggled", lambda w, n=name: w.get_active() and n != cur_lang and run("--set-lang", n))
+    lang_menu.append(radio)
+lang_item.set_submenu(lang_menu)
+menu.append(lang_item)
+
+menu.append(Gtk.SeparatorMenuItem())
+
+item = Gtk.MenuItem(label=T("t_settings"))
+item.connect("activate", lambda *_: run("--settings"))
+menu.append(item)
+
+item = Gtk.MenuItem(label=T("t_quit"))
+item.connect("activate", lambda *_: Gtk.main_quit())
+menu.append(item)
+
+menu.show_all()
+
+indicator = AppIndicator.Indicator.new(
+    "flipt", "accessories-dictionary-symbolic", AppIndicator.IndicatorCategory.APPLICATION_STATUS)
+indicator.set_title("Flipt")
+indicator.set_status(AppIndicator.IndicatorStatus.ACTIVE)
+indicator.set_menu(menu)
+
+# When the config changes (settings window, menu, manual edit), start over so that the menu
+# shows the new target language and interface language.
+pending = []
+def restart():
+    os.execv(flipt, [flipt, "--tray"])
+def on_change(*_):
+    if not pending:
+        pending.append(GLib.timeout_add(400, restart))
+monitor = Gio.File.new_for_path(conf).monitor_file(Gio.FileMonitorFlags.NONE, None)
+monitor.connect("changed", on_change)
+
+GLib.unix_signal_add(GLib.PRIORITY_DEFAULT, signal.SIGTERM, Gtk.main_quit)
+GLib.unix_signal_add(GLib.PRIORITY_DEFAULT, signal.SIGINT, Gtk.main_quit)
+Gtk.main()
+PYTRAY
+}
+
 # --- Command line ------------------------------------------------------------------------------
 
 case "$1" in
     --settings|--config|--prompt|--rules)
         settings; exit 0 ;;
+    --tray)
+        tray; exit 0 ;;
+    --tray-stop)
+        tray_stop; exit 0 ;;
+    --set-lang)
+        [ -n "$2" ] && write_conf "$(printf '%s' "$2" | tr -d '\n=')" "$MODEL" "$UI_LANG" "$EXTRA_PROMPT"
+        exit 0 ;;
     --show)
         echo "Config: $CONF"; echo "LANG=$TARGET_LANG"; echo "MODEL=$MODEL"; echo "UI_LANG=$UI_LANG"
         echo "PROMPT:"; if [ -n "$EXTRA_PROMPT" ]; then printf '%s\n' "$EXTRA_PROMPT" | sed 's/^/  /'; else echo "  $(msg empty)"; fi

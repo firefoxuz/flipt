@@ -37,6 +37,9 @@ The installer:
 - adds a **Flipt** entry to the applications menu;
 - grants access to `/dev/uinput` so that `ydotool` works (asks for `sudo`);
 - registers the `Super+T` hotkey. For a different key: `FLIPT_HOTKEY='<Super>y' ./install.sh`
+- pins a **Flipt icon to the top bar** and starts it at every login. Its menu translates the selected text,
+  switches the target language and opens the settings. To remove it: `flipt --tray-stop` and delete
+  `~/.config/autostart/flipt-tray.desktop`.
 
 > Access to `/dev/uinput` lets any program running under your user simulate key presses.
 > Intended for a personal computer.
@@ -70,6 +73,7 @@ Do not translate technical terms (API, deploy, commit).
 | `flipt` | translates the selected text into the configured language (this is what the hotkey runs) |
 | `flipt Russian` | one-off translation into another language |
 | `flipt --settings` | settings window |
+| `flipt --tray` / `flipt --tray-stop` | show / remove the top-bar icon |
 | `flipt --show` | current settings |
 | `echo "text" \| flipt --stdin` | no window, the result is printed to the terminal |
 
@@ -114,6 +118,9 @@ cd flipt
 - добавляет ярлык **Flipt** в меню приложений;
 - выдаёт доступ к `/dev/uinput`, чтобы работал `ydotool` (запросит `sudo`);
 - регистрирует горячую клавишу `Super+T`. Для другой клавиши: `FLIPT_HOTKEY='<Super>y' ./install.sh`
+- закрепляет **значок Flipt в верхней панели** и запускает его при каждом входе в систему. Через его меню можно
+  перевести выделенный текст, сменить язык перевода и открыть настройки. Чтобы убрать: `flipt --tray-stop`
+  и удалите `~/.config/autostart/flipt-tray.desktop`.
 
 > Доступ к `/dev/uinput` позволяет любой программе, запущенной от вашего имени, имитировать
 > нажатия клавиш. Рассчитано на личный компьютер.
@@ -148,6 +155,7 @@ UI_LANG=en
 | `flipt` | переводит выделенный текст на язык из настроек (её вызывает горячая клавиша) |
 | `flipt Russian` | разовый перевод на другой язык |
 | `flipt --settings` | окно настроек |
+| `flipt --tray` / `flipt --tray-stop` | показать / убрать значок в верхней панели |
 | `flipt --show` | текущие настройки |
 | `echo "текст" \| flipt --stdin` | без окна, результат выводится в терминал |
 
@@ -192,6 +200,9 @@ O'rnatuvchi:
 - ilovalar menyusiga **Flipt** yorlig'ini qo'shadi;
 - `ydotool` ishlashi uchun `/dev/uinput` ga ruxsat beradi (`sudo` so'raydi);
 - `Super+T` hotkey'ini ro'yxatdan o'tkazadi. Boshqa tugma uchun: `FLIPT_HOTKEY='<Super>y' ./install.sh`
+- **yuqori panelga Flipt ikonkasini** qo'yadi va uni har safar tizimga kirganda ishga tushiradi. Menyusi orqali
+  belgilangan matnni tarjima qilish, tarjima tilini almashtirish va sozlamalarni ochish mumkin.
+  Olib tashlash uchun: `flipt --tray-stop` va `~/.config/autostart/flipt-tray.desktop` faylini o'chiring.
 
 > `/dev/uinput` ruxsati sizning nomingizdan ishlayotgan har qanday dasturga klaviatura
 > bosishini simulyatsiya qilish imkonini beradi. Shaxsiy kompyuter uchun mo'ljallangan.
@@ -226,6 +237,7 @@ Texnik atamalarni (API, deploy, commit) tarjima qilma.
 | `flipt` | belgilangan matnni config'dagi tilga tarjima qiladi (hotkey shuni chaqiradi) |
 | `flipt Russian` | bir martalik boshqa tilga |
 | `flipt --settings` | sozlamalar oynasi |
+| `flipt --tray` / `flipt --tray-stop` | yuqori paneldagi ikonkani ko'rsatish / olib tashlash |
 | `flipt --show` | joriy sozlamalar |
 | `echo "matn" \| flipt --stdin` | oynasiz, natija terminalga chiqadi |
 
