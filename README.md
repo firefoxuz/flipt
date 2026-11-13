@@ -13,9 +13,9 @@ and, once you approve the result, puts it in place of the original.
 1. Select text in any application.
 2. Press `Super+T`.
 3. The translation appears in a window — edit it if needed.
-4. Click **Almashtirish** (Replace) and the selected text is replaced with the translation.
+4. Click **Replace** and the selected text is replaced with the translation.
 
-> The app's interface is in Uzbek.
+The interface is available in English (default), Uzbek and Russian — see [Settings](#settings).
 
 ### Requirements
 
@@ -45,16 +45,18 @@ The installer:
 
 Open **Flipt** from the applications menu, or run `flipt --settings`:
 
-- **Tarjima tili** (target language) — pick from the list or type one (English name: `French`, `Korean`…)
+- **Translate to** — pick from the list or type one (English name: `French`, `Korean`…)
 - **Model** — Haiku / Sonnet / Opus / Fable, latest or a pinned version
-- **Qoidalar** (rules) — an extra prompt for the translation, for example:
+- **Rules** — an extra prompt for the translation, for example:
   "Translate in a formal tone. Do not translate technical terms."
+- **Interface language** — the language of Flipt's own windows and notifications: English, O'zbekcha, Русский
 
 Everything is stored in `~/.config/flipt/config.conf`, which you can also edit by hand:
 
 ```
 LANG=Russian
 MODEL=sonnet
+UI_LANG=en
 
 [PROMPT]
 Translate in a formal tone.
@@ -88,9 +90,9 @@ Do not translate technical terms (API, deploy, commit).
 1. Выделите текст в любом приложении.
 2. Нажмите `Super+T`.
 3. Перевод появится в окне — при необходимости отредактируйте его.
-4. Нажмите **Almashtirish** (Заменить), и выделенный текст заменится переводом.
+4. Нажмите **Заменить** (**Replace**), и выделенный текст заменится переводом.
 
-> Интерфейс приложения — на узбекском языке.
+Интерфейс доступен на английском (по умолчанию), узбекском и русском — см. [Настройки](#настройки).
 
 ### Требования
 
@@ -120,16 +122,19 @@ cd flipt
 
 Откройте **Flipt** в меню приложений или выполните `flipt --settings`:
 
-- **Tarjima tili** (язык перевода) — выберите из списка или введите вручную (название по-английски: `French`, `Korean`…)
-- **Model** — Haiku / Sonnet / Opus / Fable, последняя или конкретная версия
-- **Qoidalar** (правила) — дополнительный промпт для перевода, например:
+- **Язык перевода** — выберите из списка или введите вручную (название по-английски: `French`, `Korean`…)
+- **Модель** — Haiku / Sonnet / Opus / Fable, последняя или конкретная версия
+- **Правила** — дополнительный промпт для перевода, например:
   «Переводи в официальном стиле. Технические термины не переводи.»
+- **Язык интерфейса** — язык окон и уведомлений самого Flipt: English, O'zbekcha, Русский.
+  По умолчанию английский; чтобы переключить, выберите **Русский** в поле **Interface language**.
 
 Всё хранится в файле `~/.config/flipt/config.conf`, его можно править и вручную:
 
 ```
 LANG=Russian
 MODEL=sonnet
+UI_LANG=en
 
 [PROMPT]
 Переводи в официальном стиле.
@@ -163,7 +168,9 @@ tasdiqlaganingizdan keyin o'rniga qo'yadigan kichik Linux ilovasi.
 1. Istalgan ilovada matnni belgilaysiz.
 2. `Super+T` bosasiz.
 3. Tarjima oynada chiqadi — kerak bo'lsa tahrirlaysiz.
-4. **Almashtirish** bossangiz, belgilangan matn tarjimaga almashadi.
+4. **Almashtirish** (**Replace**) bossangiz, belgilangan matn tarjimaga almashadi.
+
+Interfeys ingliz (standart), o'zbek va rus tillarida — [Sozlamalar](#sozlamalar)ga qarang.
 
 ### Talablar
 
@@ -197,12 +204,15 @@ Ilovalar menyusidan **Flipt**ni oching yoki `flipt --settings`:
 - **Model** — Haiku / Sonnet / Opus / Fable, eng so'nggi yoki aniq versiya
 - **Qoidalar** — tarjima uchun qo'shimcha prompt, masalan:
   «Rasmiy uslubda tarjima qil. Texnik atamalarni tarjima qilma.»
+- **Interfeys tili** — Flipt oynalari va bildirishnomalarining tili: English, O'zbekcha, Русский.
+  Standart — inglizcha; o'zgartirish uchun **Interface language** maydonida **O'zbekcha**ni tanlang.
 
 Hammasi `~/.config/flipt/config.conf` faylida saqlanadi, uni qo'lda ham tahrirlash mumkin:
 
 ```
 LANG=Russian
 MODEL=sonnet
+UI_LANG=en
 
 [PROMPT]
 Rasmiy uslubda tarjima qil.

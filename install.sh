@@ -1,5 +1,5 @@
 #!/bin/bash
-# Flipt o'rnatuvchisi (Ubuntu, GNOME + Wayland).
+# Flipt installer (Ubuntu, GNOME + Wayland).
 set -e
 
 HERE="$(cd "$(dirname "$0")" && pwd)"
@@ -7,7 +7,7 @@ BIN="$HOME/.local/bin"
 APPS="$HOME/.local/share/applications"
 HOTKEY="${FLIPT_HOTKEY:-<Super>t}"
 
-echo "==> Bog'liqliklar tekshirilmoqda"
+echo "==> Checking dependencies"
 missing=()
 command -v wl-paste >/dev/null || missing+=(wl-clipboard)
 command -v ydotool  >/dev/null || missing+=(ydotool)
@@ -15,25 +15,27 @@ command -v zenity   >/dev/null || missing+=(zenity)
 command -v notify-send >/dev/null || missing+=(libnotify-bin)
 python3 -c 'import gi; gi.require_version("Gtk", "3.0")' 2>/dev/null || missing+=(python3-gi gir1.2-gtk-3.0)
 if [ ${#missing[@]} -gt 0 ]; then
-    echo "    O'rnatilmoqda: ${missing[*]}"
+    echo "    Installing: ${missing[*]}"
     sudo apt install -y "${missing[@]}"
 fi
 if [ ! -x "$BIN/claude" ] && ! command -v claude >/dev/null; then
-    echo "XATO: Claude Code CLI topilmadi. Avval uni o'rnating: https://claude.com/claude-code" >&2
+    echo "ERROR: Claude Code CLI not found. Install it first: https://claude.com/claude-code" >&2
     exit 1
 fi
 
-echo "==> Skript o'rnatilmoqda: $BIN/flipt"
+echo "==> Installing the script: $BIN/flipt"
 mkdir -p "$BIN" "$APPS"
 install -m 755 "$HERE/flipt" "$BIN/flipt"
 
-echo "==> Menyu yorlig'i: $APPS/flipt.desktop"
+echo "==> Menu entry: $APPS/flipt.desktop"
 cat > "$APPS/flipt.desktop" <<DESKTOP
 [Desktop Entry]
 Type=Application
 Name=Flipt
 GenericName=Translator
-Comment=Belgilangan matnni Claude orqali tarjima qilish — sozlamalar
+Comment=Translate the selected text with Claude — settings
+Comment[uz]=Belgilangan matnni Claude orqali tarjima qilish — sozlamalar
+Comment[ru]=Перевод выделенного текста через Claude — настройки
 Exec=$BIN/flipt --settings
 Icon=accessories-dictionary
 Terminal=false
@@ -42,14 +44,16 @@ Keywords=flipt;tarjima;translate;translator;claude;perevod;
 Actions=translate;
 
 [Desktop Action translate]
-Name=Belgilangan matnni tarjima qilish
+Name=Translate the selected text
+Name[uz]=Belgilangan matnni tarjima qilish
+Name[ru]=Перевести выделенный текст
 Exec=$BIN/flipt
 DESKTOP
 update-desktop-database "$APPS" 2>/dev/null || true
 
-# ydotool klaviatura bosishini /dev/uinput orqali simulyatsiya qiladi.
+# ydotool simulates key presses through /dev/uinput.
 if [ ! -w /dev/uinput ]; then
-    echo "==> /dev/uinput ruxsati (sudo kerak)"
+    echo "==> Access to /dev/uinput (needs sudo)"
     echo 'KERNEL=="uinput", TAG+="uaccess"' | sudo tee /etc/udev/rules.d/60-uinput.rules >/dev/null
     sudo udevadm control --reload-rules
     sudo udevadm trigger /dev/uinput
@@ -60,7 +64,7 @@ SCHEMA=org.gnome.settings-daemon.plugins.media-keys
 KPATH=/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/flipt/
 current=$(gsettings get $SCHEMA custom-keybindings)
 case "$current" in
-    *"$KPATH"*) ;;                                              # allaqachon ro'yxatda
+    *"$KPATH"*) ;;                                              # already registered
     "@as []"|"[]") gsettings set $SCHEMA custom-keybindings "['$KPATH']" ;;
     *) gsettings set $SCHEMA custom-keybindings "${current%]}, '$KPATH']" ;;
 esac
@@ -69,5 +73,5 @@ gsettings set $SCHEMA.custom-keybinding:$KPATH command "$BIN/flipt"
 gsettings set $SCHEMA.custom-keybinding:$KPATH binding "$HOTKEY"
 
 echo
-echo "Tayyor. Matnni belgilang va $HOTKEY bosing."
-echo "Sozlamalar: ilovalar menyusidan «Flipt» yoki: flipt --settings"
+echo "Done. Select some text and press $HOTKEY."
+echo "Settings: open \"Flipt\" from the applications menu, or run: flipt --settings"
