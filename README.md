@@ -17,8 +17,8 @@ tasdiqlaganingizdan keyin o'rniga qo'yadigan kichik Linux ilovasi.
 ## O'rnatish
 
 ```bash
-git clone git@github.com:firefoxuz/tarjima.git
-cd tarjima
+git clone git@github.com:firefoxuz/inplace-translator.git
+cd inplace-translator
 ./install.sh
 ```
 
