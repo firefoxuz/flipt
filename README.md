@@ -1,3 +1,5 @@
+<p align="center"><img src="assets/flipt.svg" width="96" height="96" alt="Flipt logo"></p>
+
 # Flipt
 
 [English](#english) · [Русский](#русский) · [O'zbekcha](#ozbekcha)
@@ -34,7 +36,7 @@ cd flipt
 The installer:
 
 - copies the script to `~/.local/bin/flipt`;
-- adds a **Flipt** entry to the applications menu;
+- adds a **Flipt** entry to the applications menu and installs its icons (`assets/`);
 - grants access to `/dev/uinput` so that `ydotool` works (asks for `sudo`);
 - registers the `Super+T` hotkey. For a different key: `FLIPT_HOTKEY='<Super>y' ./install.sh`
 - pins a **Flipt icon to the top bar** and starts it at every login. Its menu translates the selected text,
@@ -116,7 +118,7 @@ cd flipt
 Установщик:
 
 - копирует скрипт в `~/.local/bin/flipt`;
-- добавляет ярлык **Flipt** в меню приложений;
+- добавляет ярлык **Flipt** в меню приложений и устанавливает значки (`assets/`);
 - выдаёт доступ к `/dev/uinput`, чтобы работал `ydotool` (запросит `sudo`);
 - регистрирует горячую клавишу `Super+T`. Для другой клавиши: `FLIPT_HOTKEY='<Super>y' ./install.sh`
 - закрепляет **значок Flipt в верхней панели** и запускает его при каждом входе в систему. Через его меню можно
@@ -199,7 +201,7 @@ cd flipt
 O'rnatuvchi:
 
 - skriptni `~/.local/bin/flipt` ga ko'chiradi;
-- ilovalar menyusiga **Flipt** yorlig'ini qo'shadi;
+- ilovalar menyusiga **Flipt** yorlig'ini qo'shadi va ikonkalarini o'rnatadi (`assets/`);
 - `ydotool` ishlashi uchun `/dev/uinput` ga ruxsat beradi (`sudo` so'raydi);
 - `Super+T` hotkey'ini ro'yxatdan o'tkazadi. Boshqa tugma uchun: `FLIPT_HOTKEY='<Super>y' ./install.sh`
 - **yuqori panelga Flipt ikonkasini** qo'yadi va uni har safar tizimga kirganda ishga tushiradi. Menyusi orqali

@@ -6,6 +6,7 @@ HERE="$(cd "$(dirname "$0")" && pwd)"
 BIN="$HOME/.local/bin"
 APPS="$HOME/.local/share/applications"
 AUTOSTART="${XDG_CONFIG_HOME:-$HOME/.config}/autostart"
+ICONS="${XDG_DATA_HOME:-$HOME/.local/share}/icons/hicolor"
 HOTKEY="${FLIPT_HOTKEY:-<Super>t}"
 
 echo "==> Checking dependencies"
@@ -31,6 +32,11 @@ echo "==> Installing the script: $BIN/flipt"
 mkdir -p "$BIN" "$APPS"
 install -m 755 "$HERE/flipt" "$BIN/flipt"
 
+echo "==> Icons: $ICONS"
+install -D -m 644 "$HERE/assets/flipt.svg" "$ICONS/scalable/apps/flipt.svg"
+install -D -m 644 "$HERE/assets/flipt-symbolic.svg" "$ICONS/symbolic/apps/flipt-symbolic.svg"
+gtk-update-icon-cache -q -t -f "$ICONS" 2>/dev/null || true
+
 echo "==> Menu entry: $APPS/flipt.desktop"
 cat > "$APPS/flipt.desktop" <<DESKTOP
 [Desktop Entry]
@@ -41,7 +47,7 @@ Comment=Translate the selected text with Claude — settings
 Comment[uz]=Belgilangan matnni Claude orqali tarjima qilish — sozlamalar
 Comment[ru]=Перевод выделенного текста через Claude — настройки
 Exec=$BIN/flipt --settings
-Icon=accessories-dictionary
+Icon=flipt
 Terminal=false
 Categories=Utility;
 Keywords=flipt;tarjima;translate;translator;claude;perevod;
@@ -84,7 +90,7 @@ Type=Application
 Name=Flipt
 Comment=Flipt top-bar icon
 Exec=$BIN/flipt --tray
-Icon=accessories-dictionary
+Icon=flipt
 Terminal=false
 NoDisplay=true
 X-GNOME-Autostart-enabled=true

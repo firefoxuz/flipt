@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+  <title>Flipt</title>
+  <g fill="#2e3436">
+    <rect x="2" y="3" width="2" height="11.5" rx="1"/>
+    <rect x="2" y="3" width="7.5" height="2" rx="1"/>
+    <path d="M9 0.75 L13.5 4 L9 7.25 Z"/>
+    <rect x="9.5" y="10" width="4.5" height="2" rx="1"/>
+    <path d="M10 8 L5.75 11 L10 14 Z"/>
+  </g>
+</svg>

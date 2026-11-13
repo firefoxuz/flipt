@@ -220,7 +220,20 @@ EOF
     esac
 }
 
-notify() { notify-send -t 3000 -i accessories-dictionary "Flipt" "$1"; }
+# Flipt's own icons are put in place by install.sh; without them fall back to a stock icon.
+ICON_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/icons/hicolor"
+if [ -f "$ICON_DIR/scalable/apps/flipt.svg" ]; then
+    ICON="flipt"; ICON_FILE="$ICON_DIR/scalable/apps/flipt.svg"
+else
+    ICON="accessories-dictionary"; ICON_FILE=""
+fi
+if [ -f "$ICON_DIR/symbolic/apps/flipt-symbolic.svg" ]; then
+    ICON_SYMBOLIC="flipt-symbolic"; ICON_SYMBOLIC_DIR="$ICON_DIR/symbolic/apps"
+else
+    ICON_SYMBOLIC="accessories-dictionary-symbolic"; ICON_SYMBOLIC_DIR=""
+fi
+
+notify() { notify-send -t 3000 -i "$ICON" "Flipt" "$1"; }
 
 # --- Config ------------------------------------------------------------------------------------
 
@@ -484,21 +497,24 @@ about() {
 $(msg about_hotkey "$hotkey")"
     fi
 
-    python3 - "$VERSION" "$WEBSITE" "$comments" "$(msg about_site)" "$(msg t_about)" 2>/dev/null <<'PYABOUT'
+    python3 - "$VERSION" "$WEBSITE" "$comments" "$(msg about_site)" "$(msg t_about)" "$ICON" "$ICON_FILE" 2>/dev/null <<'PYABOUT'
 import sys
 import gi
 gi.require_version("Gtk", "3.0")
-from gi.repository import Gtk
+from gi.repository import Gtk, GdkPixbuf
 
-version, website, comments, site_label, title = sys.argv[1:6]
+version, website, comments, site_label, title, icon, icon_file = sys.argv[1:8]
 d = Gtk.AboutDialog()
 d.set_program_name("Flipt")
 d.set_version(version)
 d.set_comments(comments)
 d.set_website(website)
 d.set_website_label(site_label)
-d.set_logo_icon_name("accessories-dictionary")
-d.set_icon_name("accessories-dictionary")
+if icon_file:
+    d.set_logo(GdkPixbuf.Pixbuf.new_from_file_at_size(icon_file, 96, 96))
+else:
+    d.set_logo_icon_name(icon)
+d.set_icon_name(icon)
 d.set_title("%s — Flipt" % title)   # after set_program_name, which resets the title
 d.run()
 d.destroy()
@@ -530,7 +546,7 @@ tray() {
     echo $$ > "$TRAY_PID"
 
     # exec keeps the PID, so the PID file stays valid.
-    exec python3 - --flipt-tray "$self" "$CONF" "$TARGET_LANG" "${LANGS[@]}" 2>/dev/null <<'PYTRAY'
+    exec python3 - --flipt-tray "$self" "$CONF" "$ICON_SYMBOLIC" "$ICON_SYMBOLIC_DIR" "$TARGET_LANG" "${LANGS[@]}" 2>/dev/null <<'PYTRAY'
 import os, signal, subprocess, sys
 import gi
 gi.require_version("Gtk", "3.0")
@@ -545,7 +561,7 @@ from gi.repository import Gtk, Gio, GLib
 def T(key):
     return os.environ.get("FLIPT_T_" + key, key)
 
-flipt, conf, cur_lang, langs = sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5:]
+flipt, conf, icon, icon_dir, cur_lang, langs = sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5], sys.argv[6], sys.argv[7:]
 if cur_lang not in langs:
     langs.append(cur_lang)
 
@@ -589,7 +605,9 @@ menu.append(item)
 menu.show_all()
 
 indicator = AppIndicator.Indicator.new(
-    "flipt", "accessories-dictionary-symbolic", AppIndicator.IndicatorCategory.APPLICATION_STATUS)
+    "flipt", icon, AppIndicator.IndicatorCategory.APPLICATION_STATUS)
+if icon_dir:
+    indicator.set_icon_theme_path(icon_dir)
 indicator.set_title("Flipt")
 indicator.set_status(AppIndicator.IndicatorStatus.ACTIVE)
 indicator.set_menu(menu)
