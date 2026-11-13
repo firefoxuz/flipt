@@ -1,5 +1,5 @@
 #!/bin/bash
-# Flipt installer (Ubuntu, GNOME + Wayland).
+# Flipt installer (Ubuntu / GNOME, Wayland or X11 session).
 set -e
 
 HERE="$(cd "$(dirname "$0")" && pwd)"
@@ -9,11 +9,21 @@ AUTOSTART="${XDG_CONFIG_HOME:-$HOME/.config}/autostart"
 ICONS="${XDG_DATA_HOME:-$HOME/.local/share}/icons/hicolor"
 HOTKEY="${FLIPT_HOTKEY:-<Super>t}"
 
-echo "==> Checking dependencies"
+# Selection, clipboard and the paste key need different tools on Wayland and on X11.
+if [ -n "$WAYLAND_DISPLAY" ]; then SESSION="wayland"; else SESSION="x11"; fi
+
+echo "==> Checking dependencies ($SESSION session)"
 missing=()
-command -v wl-paste >/dev/null || missing+=(wl-clipboard)
-command -v ydotool  >/dev/null || missing+=(ydotool)
-command -v zenity   >/dev/null || missing+=(zenity)
+if [ "$SESSION" = wayland ]; then
+    command -v wl-paste >/dev/null || missing+=(wl-clipboard)
+    command -v ydotool  >/dev/null || missing+=(ydotool)
+    # Used to tell whether the focused window is a terminal.
+    python3 -c 'import gi; gi.require_version("Atspi", "2.0")' 2>/dev/null || missing+=(gir1.2-atspi-2.0)
+else
+    command -v xclip   >/dev/null || missing+=(xclip)
+    command -v xdotool >/dev/null || missing+=(xdotool)
+    command -v xprop   >/dev/null || missing+=(x11-utils)
+fi
 command -v notify-send >/dev/null || missing+=(libnotify-bin)
 python3 -c 'import gi; gi.require_version("Gtk", "3.0")' 2>/dev/null || missing+=(python3-gi gir1.2-gtk-3.0)
 python3 -c 'import gi; gi.require_version("AyatanaAppIndicator3", "0.1")' 2>/dev/null \
@@ -73,8 +83,8 @@ Exec=$BIN/flipt --about
 DESKTOP
 update-desktop-database "$APPS" 2>/dev/null || true
 
-# ydotool simulates key presses through /dev/uinput.
-if [ ! -w /dev/uinput ]; then
+# On Wayland, ydotool simulates key presses through /dev/uinput.
+if [ "$SESSION" = wayland ] && [ ! -w /dev/uinput ]; then
     echo "==> Access to /dev/uinput (needs sudo)"
     echo 'KERNEL=="uinput", TAG+="uaccess"' | sudo tee /etc/udev/rules.d/60-uinput.rules >/dev/null
     sudo udevadm control --reload-rules
