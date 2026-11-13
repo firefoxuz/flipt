@@ -6,6 +6,7 @@
 #   flipt --settings   settings window: languages, model and translation rules (extra prompt)
 #   flipt --tray       top-bar icon with a menu (started automatically at login by the installer)
 #   flipt --tray-stop  remove the top-bar icon
+#   flipt --about      "About" window
 #   flipt --show       print the current settings
 #   flipt --stdin      translate stdin to stdout (no windows)
 
@@ -16,6 +17,9 @@ CLAUDE="$HOME/.local/bin/claude"
 DEFAULT_LANG="English"
 DEFAULT_MODEL="sonnet"
 DEFAULT_UI_LANG="en"
+
+VERSION="1.0"
+WEBSITE="https://github.com/firefoxuz/flipt"
 
 # Target languages offered in the settings window (any other name can be typed in).
 LANGS=(English Russian Uzbek Turkish German Arabic)
@@ -84,7 +88,11 @@ load_messages() {  # $1 = interface language code
         [t_translate]="Translate selected text"
         [t_lang]="Translate to"
         [t_settings]="Settings…"
+        [t_about]="About"
         [t_quit]="Quit"
+        [about_desc]="Translates the selected text with Claude and, once you approve it, puts the translation in place of the original."
+        [about_hotkey]="Hotkey: %s"
+        [about_site]="Source code on GitHub"
     )
     case "$1" in
         uz)
@@ -117,7 +125,11 @@ load_messages() {  # $1 = interface language code
             M[t_translate]="Belgilangan matnni tarjima qilish"
             M[t_lang]="Tarjima tili"
             M[t_settings]="Sozlamalar…"
+            M[t_about]="Dastur haqida"
             M[t_quit]="Chiqish"
+            M[about_desc]="Belgilangan matnni Claude orqali tarjima qiladi va siz tasdiqlagach, tarjimani asl matn o'rniga qo'yadi."
+            M[about_hotkey]="Hotkey: %s"
+            M[about_site]="Manba kodi GitHub'da"
             ;;
         ru)
             M[select_first]="Сначала выделите текст."
@@ -149,7 +161,11 @@ load_messages() {  # $1 = interface language code
             M[t_translate]="Перевести выделенный текст"
             M[t_lang]="Язык перевода"
             M[t_settings]="Настройки…"
+            M[t_about]="О программе"
             M[t_quit]="Выход"
+            M[about_desc]="Переводит выделенный текст через Claude и после вашего подтверждения вставляет перевод на место оригинала."
+            M[about_hotkey]="Горячая клавиша: %s"
+            M[about_site]="Исходный код на GitHub"
             ;;
     esac
 }
@@ -170,6 +186,7 @@ Flipt — belgilangan matnni Claude orqali tarjima qilib, tasdiqlangach o'rniga 
   flipt --settings   sozlamalar oynasi: tillar, model va tarjima qoidalari (qo'shimcha prompt)
   flipt --tray       yuqori paneldagi ikonka va menyu (o'rnatuvchi uni tizimga kirishda avtomatik ishga tushiradi)
   flipt --tray-stop  yuqori paneldagi ikonkani olib tashlaydi
+  flipt --about      «Dastur haqida» oynasi
   flipt --show       joriy sozlamalarni ko'rsatadi
   flipt --stdin      stdin'dagi matnni tarjima qilib stdout'ga chiqaradi (oynasiz)
 EOF
@@ -182,6 +199,7 @@ Flipt — переводит выделенный текст через Claude �
   flipt --settings   окно настроек: языки, модель и правила перевода (дополнительный промпт)
   flipt --tray       значок в верхней панели с меню (установщик запускает его автоматически при входе)
   flipt --tray-stop  убрать значок из верхней панели
+  flipt --about      окно «О программе»
   flipt --show       показать текущие настройки
   flipt --stdin      перевести stdin в stdout (без окон)
 EOF
@@ -194,6 +212,7 @@ Flipt — translates the selected text with Claude and, once approved, puts it i
   flipt --settings   settings window: languages, model and translation rules (extra prompt)
   flipt --tray       top-bar icon with a menu (started automatically at login by the installer)
   flipt --tray-stop  remove the top-bar icon
+  flipt --about      "About" window
   flipt --show       print the current settings
   flipt --stdin      translate stdin to stdout (no windows)
 EOF
@@ -451,6 +470,41 @@ PYUI
     notify "$(msg saved "$new_lang" "${new_model:-$MODEL}")"
 }
 
+# --- "About" window ----------------------------------------------------------------------------
+
+about() {
+    local hotkey comments
+    hotkey=$(gsettings get org.gnome.settings-daemon.plugins.media-keys.custom-keybinding:/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/flipt/ binding 2>/dev/null | tr -d "'")
+    comments=$(msg about_desc)
+    if [ -n "$hotkey" ]; then
+        # <Super>t → Super+T
+        hotkey=$(printf '%s' "$hotkey" | sed -e 's/</ /g' -e 's/>/ /g' | awk '{ for (i = 1; i <= NF; i++) { $i = toupper(substr($i, 1, 1)) substr($i, 2) } gsub(/ /, "+"); print }')
+        comments="$comments
+
+$(msg about_hotkey "$hotkey")"
+    fi
+
+    python3 - "$VERSION" "$WEBSITE" "$comments" "$(msg about_site)" "$(msg t_about)" 2>/dev/null <<'PYABOUT'
+import sys
+import gi
+gi.require_version("Gtk", "3.0")
+from gi.repository import Gtk
+
+version, website, comments, site_label, title = sys.argv[1:6]
+d = Gtk.AboutDialog()
+d.set_program_name("Flipt")
+d.set_version(version)
+d.set_comments(comments)
+d.set_website(website)
+d.set_website_label(site_label)
+d.set_logo_icon_name("accessories-dictionary")
+d.set_icon_name("accessories-dictionary")
+d.set_title("%s — Flipt" % title)   # after set_program_name, which resets the title
+d.run()
+d.destroy()
+PYABOUT
+}
+
 # --- Top-bar icon (AppIndicator) ---------------------------------------------------------------
 
 TRAY_PID="${XDG_RUNTIME_DIR:-/tmp}/flipt-tray.pid"
@@ -524,6 +578,10 @@ item = Gtk.MenuItem(label=T("t_settings"))
 item.connect("activate", lambda *_: run("--settings"))
 menu.append(item)
 
+item = Gtk.MenuItem(label=T("t_about"))
+item.connect("activate", lambda *_: run("--about"))
+menu.append(item)
+
 item = Gtk.MenuItem(label=T("t_quit"))
 item.connect("activate", lambda *_: Gtk.main_quit())
 menu.append(item)
@@ -558,6 +616,8 @@ PYTRAY
 case "$1" in
     --settings|--config|--prompt|--rules)
         settings; exit 0 ;;
+    --about)
+        about; exit 0 ;;
     --tray)
         tray; exit 0 ;;
     --tray-stop)

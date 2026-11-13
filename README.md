@@ -74,6 +74,7 @@ Do not translate technical terms (API, deploy, commit).
 | `flipt Russian` | one-off translation into another language |
 | `flipt --settings` | settings window |
 | `flipt --tray` / `flipt --tray-stop` | show / remove the top-bar icon |
+| `flipt --about` | "About" window (also in the icon menu and the app's right-click menu) |
 | `flipt --show` | current settings |
 | `echo "text" \| flipt --stdin` | no window, the result is printed to the terminal |
 
@@ -156,6 +157,7 @@ UI_LANG=en
 | `flipt Russian` | разовый перевод на другой язык |
 | `flipt --settings` | окно настроек |
 | `flipt --tray` / `flipt --tray-stop` | показать / убрать значок в верхней панели |
+| `flipt --about` | окно «О программе» (также в меню значка и в контекстном меню приложения) |
 | `flipt --show` | текущие настройки |
 | `echo "текст" \| flipt --stdin` | без окна, результат выводится в терминал |
 
@@ -238,6 +240,7 @@ Texnik atamalarni (API, deploy, commit) tarjima qilma.
 | `flipt Russian` | bir martalik boshqa tilga |
 | `flipt --settings` | sozlamalar oynasi |
 | `flipt --tray` / `flipt --tray-stop` | yuqori paneldagi ikonkani ko'rsatish / olib tashlash |
+| `flipt --about` | «Dastur haqida» oynasi (ikonka menyusida va ilovaning o'ng tugma menyusida ham bor) |
 | `flipt --show` | joriy sozlamalar |
 | `echo "matn" \| flipt --stdin` | oynasiz, natija terminalga chiqadi |
 

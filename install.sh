@@ -45,13 +45,25 @@ Icon=accessories-dictionary
 Terminal=false
 Categories=Utility;
 Keywords=flipt;tarjima;translate;translator;claude;perevod;
-Actions=translate;
+Actions=translate;settings;about;
 
 [Desktop Action translate]
 Name=Translate the selected text
 Name[uz]=Belgilangan matnni tarjima qilish
 Name[ru]=Перевести выделенный текст
 Exec=$BIN/flipt
+
+[Desktop Action settings]
+Name=Settings
+Name[uz]=Sozlamalar
+Name[ru]=Настройки
+Exec=$BIN/flipt --settings
+
+[Desktop Action about]
+Name=About
+Name[uz]=Dastur haqida
+Name[ru]=О программе
+Exec=$BIN/flipt --about
 DESKTOP
 update-desktop-database "$APPS" 2>/dev/null || true
 
