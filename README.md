@@ -1,6 +1,10 @@
 # Tarjima
 
-**English** · [Русский](README.ru.md) · [O'zbekcha](README.uz.md)
+[English](#english) · [Русский](#русский) · [O'zbekcha](#ozbekcha)
+
+---
+
+## English
 
 A small Linux app that translates the selected text with the [Claude Code](https://claude.com/claude-code) CLI
 and, once you approve the result, puts it in place of the original.
@@ -13,13 +17,13 @@ and, once you approve the result, puts it in place of the original.
 
 > The app's interface is in Uzbek.
 
-## Requirements
+### Requirements
 
 - Ubuntu, GNOME, Wayland session (tested on 22.04)
 - [Claude Code CLI](https://claude.com/claude-code) installed and signed in (the `claude` command must work)
 - `wl-clipboard`, `ydotool`, `zenity`, `python3-gi` — the installer sets these up
 
-## Installation
+### Installation
 
 ```bash
 git clone git@github.com:firefoxuz/inplace-translator.git
@@ -37,7 +41,7 @@ The installer:
 > Access to `/dev/uinput` lets any program running under your user simulate key presses.
 > Intended for a personal computer.
 
-## Settings
+### Settings
 
 Open **Tarjima** from the applications menu, or run `tarjima --settings`:
 
@@ -57,7 +61,7 @@ Translate in a formal tone.
 Do not translate technical terms (API, deploy, commit).
 ```
 
-## Commands
+### Commands
 
 | Command | What it does |
 |---|---|
@@ -67,8 +71,155 @@ Do not translate technical terms (API, deploy, commit).
 | `tarjima --show` | current settings |
 | `echo "text" \| tarjima --stdin` | no window, the result is printed to the terminal |
 
-## Limitations
+### Limitations
 
 - Automatic paste does not work inside a terminal (paste there is `Ctrl+Shift+V`). The translation stays in the clipboard.
 - Each translation starts `claude` from scratch, so a reply takes 2–5 seconds.
 - Does not work in an X11 session (`wl-clipboard` is Wayland-only).
+
+---
+
+## Русский
+
+Небольшое приложение для Linux: переводит выделенный текст через CLI [Claude Code](https://claude.com/claude-code)
+и после вашего подтверждения вставляет перевод на место оригинала.
+(«Tarjima» по-узбекски — «перевод».)
+
+1. Выделите текст в любом приложении.
+2. Нажмите `Super+T`.
+3. Перевод появится в окне — при необходимости отредактируйте его.
+4. Нажмите **Almashtirish** (Заменить), и выделенный текст заменится переводом.
+
+> Интерфейс приложения — на узбекском языке.
+
+### Требования
+
+- Ubuntu, GNOME, сессия Wayland (проверено на 22.04)
+- Установленный [Claude Code CLI](https://claude.com/claude-code) с выполненным входом (команда `claude` должна работать)
+- `wl-clipboard`, `ydotool`, `zenity`, `python3-gi` — установщик поставит их сам
+
+### Установка
+
+```bash
+git clone git@github.com:firefoxuz/inplace-translator.git
+cd inplace-translator
+./install.sh
+```
+
+Установщик:
+
+- копирует скрипт в `~/.local/bin/tarjima`;
+- добавляет ярлык **Tarjima** в меню приложений;
+- выдаёт доступ к `/dev/uinput`, чтобы работал `ydotool` (запросит `sudo`);
+- регистрирует горячую клавишу `Super+T`. Для другой клавиши: `TARJIMA_HOTKEY='<Super>y' ./install.sh`
+
+> Доступ к `/dev/uinput` позволяет любой программе, запущенной от вашего имени, имитировать
+> нажатия клавиш. Рассчитано на личный компьютер.
+
+### Настройки
+
+Откройте **Tarjima** в меню приложений или выполните `tarjima --settings`:
+
+- **Tarjima tili** (язык перевода) — выберите из списка или введите вручную (название по-английски: `French`, `Korean`…)
+- **Model** — Haiku / Sonnet / Opus / Fable, последняя или конкретная версия
+- **Qoidalar** (правила) — дополнительный промпт для перевода, например:
+  «Переводи в официальном стиле. Технические термины не переводи.»
+
+Всё хранится в файле `~/.config/tarjima/config.conf`, его можно править и вручную:
+
+```
+LANG=Russian
+MODEL=sonnet
+
+[PROMPT]
+Переводи в официальном стиле.
+Технические термины (API, deploy, commit) не переводи.
+```
+
+### Команды
+
+| Команда | Что делает |
+|---|---|
+| `tarjima` | переводит выделенный текст на язык из настроек (её вызывает горячая клавиша) |
+| `tarjima Russian` | разовый перевод на другой язык |
+| `tarjima --settings` | окно настроек |
+| `tarjima --show` | текущие настройки |
+| `echo "текст" \| tarjima --stdin` | без окна, результат выводится в терминал |
+
+### Ограничения
+
+- В терминале автоматическая вставка не работает (там вставка — `Ctrl+Shift+V`). Перевод остаётся в буфере обмена.
+- Каждый перевод запускает `claude` заново, поэтому ответ занимает 2–5 секунд.
+- Не работает в сессии X11 (`wl-clipboard` — только для Wayland).
+
+---
+
+## O'zbekcha
+
+Belgilangan matnni [Claude Code](https://claude.com/claude-code) CLI orqali tarjima qilib,
+tasdiqlaganingizdan keyin o'rniga qo'yadigan kichik Linux ilovasi.
+
+1. Istalgan ilovada matnni belgilaysiz.
+2. `Super+T` bosasiz.
+3. Tarjima oynada chiqadi — kerak bo'lsa tahrirlaysiz.
+4. **Almashtirish** bossangiz, belgilangan matn tarjimaga almashadi.
+
+### Talablar
+
+- Ubuntu, GNOME, Wayland sessiyasi (22.04 da sinalgan)
+- [Claude Code CLI](https://claude.com/claude-code) o'rnatilgan va tizimga kirilgan (`claude` buyrug'i ishlashi kerak)
+- `wl-clipboard`, `ydotool`, `zenity`, `python3-gi` — o'rnatuvchi o'zi qo'yadi
+
+### O'rnatish
+
+```bash
+git clone git@github.com:firefoxuz/inplace-translator.git
+cd inplace-translator
+./install.sh
+```
+
+O'rnatuvchi:
+
+- skriptni `~/.local/bin/tarjima` ga ko'chiradi;
+- ilovalar menyusiga **Tarjima** yorlig'ini qo'shadi;
+- `ydotool` ishlashi uchun `/dev/uinput` ga ruxsat beradi (`sudo` so'raydi);
+- `Super+T` hotkey'ini ro'yxatdan o'tkazadi. Boshqa tugma uchun: `TARJIMA_HOTKEY='<Super>y' ./install.sh`
+
+> `/dev/uinput` ruxsati sizning nomingizdan ishlayotgan har qanday dasturga klaviatura
+> bosishini simulyatsiya qilish imkonini beradi. Shaxsiy kompyuter uchun mo'ljallangan.
+
+### Sozlamalar
+
+Ilovalar menyusidan **Tarjima**ni oching yoki `tarjima --settings`:
+
+- **Tarjima tili** — ro'yxatdan yoki qo'lda (inglizcha nom: `French`, `Korean`…)
+- **Model** — Haiku / Sonnet / Opus / Fable, eng so'nggi yoki aniq versiya
+- **Qoidalar** — tarjima uchun qo'shimcha prompt, masalan:
+  «Rasmiy uslubda tarjima qil. Texnik atamalarni tarjima qilma.»
+
+Hammasi `~/.config/tarjima/config.conf` faylida saqlanadi, uni qo'lda ham tahrirlash mumkin:
+
+```
+LANG=Russian
+MODEL=sonnet
+
+[PROMPT]
+Rasmiy uslubda tarjima qil.
+Texnik atamalarni (API, deploy, commit) tarjima qilma.
+```
+
+### Buyruqlar
+
+| Buyruq | Vazifasi |
+|---|---|
+| `tarjima` | belgilangan matnni config'dagi tilga tarjima qiladi (hotkey shuni chaqiradi) |
+| `tarjima Russian` | bir martalik boshqa tilga |
+| `tarjima --settings` | sozlamalar oynasi |
+| `tarjima --show` | joriy sozlamalar |
+| `echo "matn" \| tarjima --stdin` | oynasiz, natija terminalga chiqadi |
+
+### Cheklovlar
+
+- Terminal ichida avtomatik qo'yish ishlamaydi (u yerda paste `Ctrl+Shift+V`). Tarjima clipboard'da qoladi.
+- Har bir tarjima `claude` ni yangidan ishga tushiradi, shuning uchun javob 2–5 soniya oladi.
+- X11 sessiyasida ishlamaydi (`wl-clipboard` Wayland uchun).
